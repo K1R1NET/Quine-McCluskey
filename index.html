@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<title>Куайн–Мак-Класки</title>
+
+<style>
+:root {
+    --bg-main: #0f1a17;
+    --bg-card: rgba(20, 35, 32, 0.9);
+    --bg-input: #162824;
+    --accent: #3fa37a;
+    --accent-hover: #4fc292;
+    --text-main: #e6f2ee;
+    --text-muted: #9fbfb3;
+    --error: #ff6b6b;
+    --terminal-bg: #0b1512;
+    --terminal-text: #8cffc1;
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Inter", Arial, sans-serif;
+    background: radial-gradient(circle at top, #162824, #0b1412 70%);
+    color: var(--text-main);
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 1100px;
+    width: 95%;
+    margin: auto;
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+    padding: 28px;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1; 
+    min-height: 0; 
+    gap: 18px; 
+}
+
+h1 {
+    text-align: center;
+    margin: 0; 
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 26px;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+input[type="number"],
+input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 15px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: var(--bg-input);
+    color: var(--text-main);
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+input::placeholder {
+    color: #6f8f85;
+}
+
+input:focus {
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 0 2px rgba(63, 163, 122, 0.2);
+}
+
+.error {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--error);
+}
+
+button {
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: none;
+    background: linear-gradient(135deg, var(--accent), #2f7f60);
+    color: #072018;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+button:hover {
+    background: linear-gradient(135deg, var(--accent-hover), #3aa87f);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+#output {
+    flex: 1; 
+    min-height: 0; 
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius);
+    background: var(--terminal-bg);
+    color: var(--terminal-text);
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 14px;
+    resize: none;
+    overflow: auto;
+    white-space: pre;
+    border: none;
+    outline: none;
+    box-shadow: inset 0 0 0 1px rgba(140, 255, 193, 0.15);
+}
+
+/* Скроллбар */
+#output::-webkit-scrollbar {
+    width: 10px;
+}
+#output::-webkit-scrollbar-track {
+    background: #0b1512;
+    border-radius: 10px;
+}
+#output::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--accent), #2f7f60);
+    border-radius: 10px;
+    border: 2px solid #0b1512;
+}
+#output::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--accent-hover), #3aa87f);
+}
+#output {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) #0b1512;
+}
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="content-wrapper">
+        <h1>Метод Куайна–Мак-Класки</h1>
+        <div class="subtitle">Минимизация булевых функций <i>( powered by k1r1net )</i></div>
+
+        <div class="input-group">
+            <label for="impLen">Число переменных</label>
+            <input type="number" id="impLen" placeholder="Например: 4">
+            <div id="impLenError" class="error"></div>
+        </div>
+
+        <div class="input-group">
+            <label for="arrayInput">Импликанты</label>
+            <input type="text" id="arrayInput" placeholder="1010 1110 0111">
+            <div id="arrayError" class="error"></div>
+        </div>
+
+        <button onclick="runAlgorithm()">Запустить алгоритм</button>
+
+        <textarea id="output" readonly placeholder="Здесь появится результат..."></textarea>
+    </div>
+</div>
+
+<script>
+var Module = {
+    print: (text) => {
+        const out = document.getElementById('output');
+        out.value += text + "\n";
+        out.scrollTop = out.scrollHeight;
+    }
+};
+
+function clearErrors() {
+    impLenError.textContent = '';
+    arrayError.textContent = '';
+}
+
+function clearOutput() {
+    output.value = '';
+}
+
+function runAlgorithm() {
+    clearErrors();
+    clearOutput();
+
+    const val = parseInt(impLen.value);
+    const inputStr = arrayInput.value.trim();
+    const arr = inputStr.split(/\s+/);
+    let valid = true;
+
+    if (isNaN(val) || val <= 0) {
+        impLenError.textContent = 'Введите число больше нуля';
+        valid = false;
+    }
+
+    if (!inputStr) {
+        arrayError.textContent = 'Введите хотя бы одну импликанту';
+        valid = false;
+    } else {
+        for (const item of arr) {
+            if (!/^[0-2]+$/.test(item)) {
+                arrayError.textContent = `Недопустимые символы в "${item}"`;
+                valid = false;
+                break;
+            }
+            if (item.length !== val) {
+                arrayError.textContent = `"${item}" должно содержать ${val} символов`;
+                valid = false;
+                break;
+            }
+        }
+    }
+
+    if (!valid) return;
+
+    const numArr = arr.map(Number);
+    Module.ccall('setImpLen', null, ['number'], [val]);
+
+    const ptr = Module._malloc(numArr.length * 4);
+    Module.HEAP32.set(numArr, ptr >> 2);
+    Module.ccall('setArray', null, ['number', 'number'], [ptr, numArr.length]);
+    Module._free(ptr);
+
+    Module.ccall('runAlgorithm', null, [], []);
+}
+</script>
+
+<script src="index.js"></script>
+</body>
+</html>

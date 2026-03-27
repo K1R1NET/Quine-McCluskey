@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='%232f7f60' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 11h6M2.5 21h6'/%3E%3Cpath d='M8.5 7v18h4a9 9 0 0 0 0-18h-4z'/%3E%3Ccircle cx='23.5' cy='16' r='2'/%3E%3Cpath d='M25.5 16h4'/%3E%3C/svg%3E">
+<link rel = "icon" href = "/favicon.svg" type="image/svg+xml">
+<link rel = "icon" href = "/favicon.ico" type="image/x-icon">
 <title>Куайн–Мак-Класки</title>
 
 <style>
@@ -24,6 +25,7 @@
     box-sizing: border-box;
 }
 
+
 html, body {
     margin: 0;
     padding: 0;
@@ -39,14 +41,14 @@ html, body {
     flex-direction: column;
     height: 100vh;
     max-width: 1100px;
-    width: 95%;
+    width: 100%;
     margin: auto;
     background: var(--bg-card);
     border-radius: var(--radius);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(6px);
     overflow: hidden;
-    padding: 28px;
+    padding: 10px 5px;
 }
 
 .content-wrapper {
@@ -54,7 +56,26 @@ html, body {
     flex-direction: column;
     flex: 1; 
     min-height: 0; 
-    gap: 18px; 
+    gap: 10px; 
+}
+
+.extended-view-buttons > button {
+    width: 12%;
+    padding: 5px 0px;
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: none;
+    background: linear-gradient(135deg, var(--accent), #2f7f60);
+    color: #072018;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.extended-view-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 h1 {
@@ -62,13 +83,14 @@ h1 {
     margin: 0; 
     font-weight: 600;
     letter-spacing: 0.5px;
-    font-size: 26px;
+    font-size: 20px;
 }
 
 .subtitle {
     text-align: center;
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 12px;
+    margin-bottom: 5px;
 }
 
 .input-group {
@@ -77,7 +99,7 @@ h1 {
 }
 
 label {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--text-muted);
     margin-bottom: 6px;
 }
@@ -86,7 +108,7 @@ input[type="number"],
 input[type="text"] {
     width: 100%;
     padding: 12px 14px;
-    font-size: 15px;
+    font-size: 12px;
     border-radius: var(--radius);
     border: 1px solid transparent;
     background: var(--bg-input);
@@ -106,13 +128,20 @@ input:focus {
 
 .error {
     margin-top: 6px;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--error);
 }
 
-button {
-    padding: 14px;
-    font-size: 16px;
+.buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.buttons > button {
+    width: 40%;
+    padding: 13px 0px;
+    font-size: 12px;
     font-weight: 600;
     border-radius: var(--radius);
     border: none;
@@ -143,7 +172,7 @@ button:active {
     background: var(--terminal-bg);
     color: var(--terminal-text);
     font-family: "JetBrains Mono", Consolas, monospace;
-    font-size: 14px;
+    font-size: 11px;
     resize: none;
     overflow: auto;
     white-space: pre;
@@ -151,6 +180,7 @@ button:active {
     outline: none;
     box-shadow: inset 0 0 0 1px rgba(140, 255, 193, 0.15);
 }
+
 
 /* Скроллбар */
 #output::-webkit-scrollbar {
@@ -173,37 +203,46 @@ button:active {
     scrollbar-color: var(--accent) #0b1512;
 }
 
-
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-input[type="number"] {
-    -moz-appearance: textfield;
-}
+
 </style>
 </head>
 
 <body>
-<div class="container">
-    <div class="content-wrapper">
-        <h1>Метод Куайна–Мак-Класки</h1>
-        <div class="subtitle">Минимизация булевых функций <i>( powered by k1r1net )</i></div>
+<div class = "container">
+    <div class = "content-wrapper">
 
-        <div class="input-group">
-            <label for="impLen">Число переменных</label>
-            <input type="number" id="impLen" placeholder="Например: 4">
-            <div id="impLenError" class="error"></div>
+        <div class = "extended-view-buttons" style = "display: none">
+            <button onclick = "changeFont(0)">A-</button>
+            <button onclick = "changeFont(1)">A+</button>
+            <button onclick = "changeColor()">Цвет</button>
+            <button onclick = "closeExtendedView()">Закрыть</button>
         </div>
 
-        <div class="input-group">
-            <label for="arrayInput">Импликанты</label>
-            <input type="text" id="arrayInput" placeholder="1010 1110 0111">
-            <div id="arrayError" class="error"></div>
+        <h1 class = "title mainView">Метод Куайна–Мак-Класки</h1>
+        <div class = "subtitle mainView">Минимизация булевых функций <i>( powered by k1r1net )</i></div>
+
+        <div class = "input-group mainView">
+            <label for = "impLen">Число переменных</label>
+            <input type = "number" id = "impLen" placeholder = "Например: 4">
+            <div id = "impLenError" class = "error"></div>
         </div>
 
-        <button onclick="runAlgorithm()">Запустить алгоритм</button>
+        <div class="input-group mainView">
+            <label for = "arrayInput">Импликанты</label>
+            <input type = "text" id = "arrayInput" 
+            oninput = "this.value = this.value.replace(/[^0-2 ]/g,'')" placeholder="1010 1110 0111">
+            <div id = "arrayError" class="error"></div>
+        </div>
+
+        <div class = "buttons mainView">
+            <button onclick = "runAlgorithm()">Запустить алгоритм</button>
+            <button onclick = "extendedView()">Расширенный вид</button>
+        </div>
 
         <textarea id="output" readonly placeholder="Здесь появится результат..."></textarea>
     </div>
@@ -271,8 +310,47 @@ function runAlgorithm() {
 
     Module.ccall('runAlgorithm', null, [], []);
 }
+
+function extendedView() {
+    const elements = document.querySelectorAll(".mainView");
+    elements.forEach(el => {
+        el.style.display = 'none';
+    })
+    document.querySelector(".extended-view-buttons").style.display = 'flex';
+}
+
+function closeExtendedView() {
+    const elements = document.querySelectorAll(".mainView");
+    elements.forEach(el => {
+        el.style.display = '';
+    })
+    document.querySelector(".extended-view-buttons").style.display = 'none';
+}
+
+function changeFont(flag) {
+    const output = document.getElementById("output");
+    const currentSize = window.getComputedStyle(output, null).getPropertyValue('font-size');
+    output.style.fontSize = (flag) ? parseFloat(currentSize) + 0.5 + "px": parseFloat(currentSize) - 0.5 + "px";
+}
+
+const colors = [
+  "#8cffc1",
+  "#ffffff",
+  "#c7b7ff",
+  "#ffd479",
+  "#ff9fbf",
+  "#ff9f7f",
+  "#b8c7c1"
+];
+let colorIndex = 0;
+
+function changeColor(){
+  const output = document.getElementById("output");
+  colorIndex = (colorIndex + 1) % colors.length;
+  output.style.color = colors[colorIndex];
+}
 </script>
 
-<script src="index.js"></script>
+<script src = "index.js"></script>
 </body>
 </html>
